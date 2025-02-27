@@ -21,6 +21,8 @@ function(tablegen project ofn)
     message(FATAL_ERROR "${project}_TABLEGEN_EXE not set")
   endif()
 
+ message(STATUS "tablegen(${project} ${ofn}")
+
   # Use depfile instead of globbing arbitrary *.td(s) for Ninja.
   if(CMAKE_GENERATOR MATCHES "Ninja")
     # Make output path relative to build.ninja, assuming located on
@@ -131,6 +133,25 @@ function(tablegen project ofn)
     set(LLVM_TABLEGEN_JOB_POOL "")
   endif()
 
+    if (${ofn} STREQUAL "test.inc")
+ message(STATUS "${CMAKE_CURRENT_BINARY_DIR}/${ofn}
+    COMMAND ${tablegen_exe} ${ARG_UNPARSED_ARGUMENTS} -I ${CMAKE_CURRENT_SOURCE_DIR}
+    ${tblgen_includes}
+    ${LLVM_TABLEGEN_FLAGS}
+    ${LLVM_TARGET_DEFINITIONS_ABSOLUTE}
+    ${tblgen_change_flag}
+    ${additional_cmdline}
+    # The file in LLVM_TARGET_DEFINITIONS may be not in the current
+    # directory and local_tds may not contain it, so we must
+    # explicitly list it here:
+    DEPENDS ${ARG_DEPENDS} ${tablegen_depends}
+      ${local_tds} ${global_tds}
+    ${LLVM_TARGET_DEFINITIONS_ABSOLUTE}
+    ${LLVM_TARGET_DEPENDS}
+    ${LLVM_TABLEGEN_JOB_POOL}
+    COMMENT "Building ${ofn}...""
+    )
+  endif()
   add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${ofn}
     COMMAND ${tablegen_exe} ${ARG_UNPARSED_ARGUMENTS} -I ${CMAKE_CURRENT_SOURCE_DIR}
     ${tblgen_includes}
