@@ -1229,7 +1229,9 @@ amd_comgr_status_t AMDGPUCompiler::processFile(DataObject *Input,
 
   // Add SPIR-V flags
   for (auto Flag : Input->SpirvFlags) {
-    Argv.push_back("-Xclang");
+    if (!StringRef(Flag).starts_with("-O")) {
+      Argv.push_back("-Xclang");
+    }
     Argv.push_back(Flag);
   }
 
